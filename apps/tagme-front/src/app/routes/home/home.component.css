@@ -1,3 +1,14 @@
 table {
-  width: 100%;
+  width: 80%;
+  background: var(--mat-card-elevated-container-color);
+}
+.card {
+  padding: 12px;
+}
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f5f5;
 }

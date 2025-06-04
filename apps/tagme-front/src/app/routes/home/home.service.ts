@@ -18,6 +18,7 @@ export class HomeService {
         id: "assad"
       }
     ];
+    await new Promise(r => setTimeout(r, 1000))
     return USERS_DATA
   }
 }
