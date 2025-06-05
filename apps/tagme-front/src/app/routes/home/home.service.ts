@@ -1,17 +1,24 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
-export interface users {
+export type Items = {
   name: string;
   description: string;
   id: string;
 }
+
+export type GetItemsResponse = {
+  data: Items[],
+  page: number,
+  totalPages: number
+}
+
 @Injectable({ providedIn: 'root' })
 export class HomeService {
   constructor(private http: HttpClient) { }
 
-  async getUsers() {
-    const USERS_DATA: users[] = [
+  async getItems(): Promise<GetItemsResponse> {
+    const USERS_DATA: Items[] = [
       {
         name: "jogn",
         description: "testess",
@@ -19,6 +26,6 @@ export class HomeService {
       }
     ];
     await new Promise(r => setTimeout(r, 1000))
-    return USERS_DATA
+    return { data: USERS_DATA, page: 1, totalPages: 2 }
   }
 }

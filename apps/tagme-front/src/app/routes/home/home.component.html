@@ -1,6 +1,5 @@
 <div class="centered" >
   <mat-card class="card">
-    <div *ngIf="dataSource$ | async as dataSource; else loading">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Nome </th>
@@ -20,7 +19,13 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-    </div>
-    <ng-template #loading>Carregando...</ng-template>
+      <ng-container *ngIf="vm$ | async as vm">
+        <app-paginator
+          [pageSize]="vm.pageSize"
+          [pageIndex]="vm.pageIndex"
+          [totalPages]="vm.totalPages"
+          [onChange]="onPaginatorChange"
+        />
+      </ng-container>
   </mat-card>
 </div>
