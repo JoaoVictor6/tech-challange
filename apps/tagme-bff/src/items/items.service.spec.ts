@@ -3,17 +3,22 @@ import { getModelToken } from '@nestjs/mongoose';
 import { ItemsService } from './items.service';
 import { Item, ItemSchema, ItemDocument } from './schemas/item.schema';
 import { Model } from 'mongoose';
-import { MongooseMockModule } from './tests/mongoose-mock.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 describe('ItemsService', () => {
   let service: ItemsService;
   let model: Model<Item>;
+  let mongod: MongoMemoryServer;
 
   beforeAll(async () => {
+    mongod = await MongoMemoryServer.create();
+    const uri = mongod.getUri();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        await MongooseMockModule.forRoot(),
+        MongooseModule.forRoot(uri),
         MongooseModule.forFeature([{ name: Item.name, schema: ItemSchema }]),
       ],
       providers: [ItemsService],
@@ -25,6 +30,11 @@ describe('ItemsService', () => {
 
   afterEach(async () => {
     await model.deleteMany({});
+  });
+
+  afterAll(async () => {
+    await mongoose.disconnect();
+    await mongod.stop();
   });
 
   it('should create and retrieve an item', async () => {
@@ -40,6 +50,20 @@ describe('ItemsService', () => {
     const found = await service.findOne(created._id as string);
     expect(found.name).toBe('Test Item');
   });
+  it('verify params normalization', async () => {
+    for (let i = 1; i <= 2; i++) {
+      await service.create({
+        name: `Item ${i}`,
+        description: `Description ${i}`,
+        imageUrl: `http://example.com/image-${i}.jpg`,
+      });
+    }
+
+    const result = await service.findAll({ page: 0, limit: 0 });
+
+    expect(result.page).toBe(1);
+    expect(result.totalPages).toBe(2);
+  })
   it('should return paginated items with correct structure', async () => {
     for (let i = 1; i <= 25; i++) {
       await service.create({

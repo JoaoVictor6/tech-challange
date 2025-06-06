@@ -14,8 +14,12 @@ export class ItemsService {
     return createdItem.save();
   }
 
-  async findAll({ page = 1, limit = 10 }: { page: number, limit: number }) {
-    const skip = (page - 1) * limit
+  async findAll({ page: rawPage = 1, limit: rawLimit = 10 }: { page: number, limit: number }) {
+    const normalizeValue = (value: number) => value <= 0 ? 1 : value
+    const page = normalizeValue(rawPage)
+    const limit = normalizeValue(rawLimit)
+    const calcSkip = (page - 1) * limit
+    const skip = calcSkip < 0 ? 0 : calcSkip
     const [items, totalCount] = await Promise.all([
       this.itemModel.find().skip(skip).limit(limit).exec(),
       this.itemModel.countDocuments().exec()
