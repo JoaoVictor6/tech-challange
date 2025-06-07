@@ -1,5 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { catchError, Observable, throwError } from "rxjs";
 
 export type Items = {
   name: string;
@@ -15,17 +17,21 @@ export type GetItemsResponse = {
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private route: ActivatedRoute) { }
 
-  async getItems(): Promise<GetItemsResponse> {
-    const USERS_DATA: Items[] = [
-      {
-        name: "jogn",
-        description: "testess",
-        id: "assad"
-      }
-    ];
-    await new Promise(r => setTimeout(r, 1000))
-    return { data: USERS_DATA, page: 1, totalPages: 2 }
+  getUrlPaginationInfos(params: Params) {
+    const pageIndex = Number(params['page']) || 1;
+    const pageSize = Number(params['pageSize']) || 10;
+
+    return { pageIndex, pageSize }
+  }
+  getItems({ pageSize, pageIndex }: { pageIndex: number, pageSize: number }): Observable<GetItemsResponse> {
+    const url = new URL("http://localhost:3000/items")
+    url.searchParams.set("page", String(pageIndex))
+    url.searchParams.set("pageSize", String(pageSize))
+    const response = this.http.get<GetItemsResponse>(url.toString()).pipe(
+      catchError(err => throwError(() => new Error("Dados não encontrado")))
+    )
+    return response
   }
 }

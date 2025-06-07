@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
@@ -9,7 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 })
 export class PaginatorComponent {
   @Input('onChange') onPaginatorChange!: (event: PageEvent) => void
-  @Input() totalPages!: number
+  @Input() totalItems!: number
   @Input() pageSize!: number
   @Input() pageIndex!: number
 }
