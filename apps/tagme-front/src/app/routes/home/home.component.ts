@@ -14,13 +14,14 @@ import { PaginationActions } from './stores/pagination/actions/pagination.action
 import { paginationFeature } from './stores/pagination/reducers/pagination.reducer';
 import { PageEvent } from '@angular/material/paginator';
 import { combineLatest, map } from 'rxjs';
+import { SearchInputComponent } from './components/search/search-input.component';
 
 @Component({
   standalone: true,
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent],
 })
 export class HomeComponent implements OnInit {
   private store = inject(Store)
@@ -50,6 +51,7 @@ export class HomeComponent implements OnInit {
   onPaginatorChange = (event: PageEvent) => {
     location.replace(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}`)
   }
+  searchByText(event: any) { }
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;

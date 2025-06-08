@@ -1,5 +1,6 @@
 <div class="centered" >
   <mat-card class="card">
+      <app-search-input (onSearch)="searchByText($event)" />
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Nome </th>

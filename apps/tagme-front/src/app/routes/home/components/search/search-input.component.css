@@ -1,0 +1,18 @@
+
+search {
+ display: flex;
+ gap: 8px;
+}
+button {
+  border-radius: 4px;
+}
+
+input {
+  flex: 1;
+  background: transparent;
+  border-radius: 4px;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
