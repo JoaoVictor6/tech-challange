@@ -14,9 +14,9 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
         return { uri };
       },
     }),
-    ItemsModule
+    ItemsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [ AppController ],
+  providers: [ AppService ],
 })
-export class AppModule { }
+export class AppModule {}

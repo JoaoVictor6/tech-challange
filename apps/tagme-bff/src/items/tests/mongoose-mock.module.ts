@@ -25,4 +25,3 @@ export class MongooseMockModule implements OnModuleDestroy {
     }
   }
 }
-

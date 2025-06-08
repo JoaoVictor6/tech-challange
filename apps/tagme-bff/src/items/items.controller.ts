@@ -1,11 +1,20 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')
 export class ItemsController {
-  constructor(private readonly itemsService: ItemsService) { }
+  constructor(private readonly itemsService: ItemsService) {}
 
   @Post()
   create(@Body() createItemDto: CreateItemDto) {
@@ -13,10 +22,7 @@ export class ItemsController {
   }
 
   @Get()
-  findAll(
-    @Query('page') rawPage = '1',
-    @Query('pageSize') rawLimit = '10',
-  ) {
+  findAll(@Query('page') rawPage = '1', @Query('pageSize') rawLimit = '10') {
     const page = parseInt(rawPage, 10);
     const limit = parseInt(rawLimit, 10);
     return this.itemsService.findAll({ page, limit });

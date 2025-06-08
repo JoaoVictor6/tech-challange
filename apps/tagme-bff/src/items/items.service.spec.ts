@@ -19,9 +19,9 @@ describe('ItemsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(uri),
-        MongooseModule.forFeature([{ name: Item.name, schema: ItemSchema }]),
+        MongooseModule.forFeature([ { name: Item.name, schema: ItemSchema } ]),
       ],
-      providers: [ItemsService],
+      providers: [ ItemsService ],
     }).compile();
 
     service = module.get<ItemsService>(ItemsService);
@@ -38,11 +38,11 @@ describe('ItemsService', () => {
   });
 
   it('should create and retrieve an item', async () => {
-    const created = await service.create({
+    const created = (await service.create({
       name: 'Test Item',
       description: 'A description',
       imageUrl: 'http://image.url',
-    }) as ItemDocument;
+    })) as ItemDocument;
 
     expect(created).toHaveProperty('_id');
     expect(created.name).toBe('Test Item');
@@ -63,7 +63,7 @@ describe('ItemsService', () => {
 
     expect(result.page).toBe(1);
     expect(result.totalPages).toBe(2);
-  })
+  });
   it('should return paginated items with correct structure', async () => {
     for (let i = 1; i <= 25; i++) {
       await service.create({
@@ -82,7 +82,7 @@ describe('ItemsService', () => {
     expect(result.page).toBe(2);
     expect(result.totalPages).toBe(3);
 
-    expect(result.data[0].name).toBe('Item 11');
-    expect(result.data[9].name).toBe('Item 20');
+    expect(result.data[ 0 ].name).toBe('Item 11');
+    expect(result.data[ 9 ].name).toBe('Item 20');
   });
 });

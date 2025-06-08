@@ -7,23 +7,29 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class ItemsService {
-  constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) { }
+  constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) {}
 
   async create(createItemDto: CreateItemDto): Promise<Item> {
     const createdItem = new this.itemModel(createItemDto);
     return createdItem.save();
   }
 
-  async findAll({ page: rawPage = 1, limit: rawLimit = 10 }: { page: number, limit: number }) {
-    const normalizeValue = (value: number) => value <= 0 ? 1 : value
-    const page = normalizeValue(rawPage)
-    const limit = normalizeValue(rawLimit)
-    const calcSkip = (page - 1) * limit
-    const skip = calcSkip < 0 ? 0 : calcSkip
-    const [items, totalCount] = await Promise.all([
+  async findAll({
+    page: rawPage = 1,
+    limit: rawLimit = 10,
+  }: {
+    page: number;
+    limit: number;
+  }) {
+    const normalizeValue = (value: number) => (value <= 0 ? 1 : value);
+    const page = normalizeValue(rawPage);
+    const limit = normalizeValue(rawLimit);
+    const calcSkip = (page - 1) * limit;
+    const skip = calcSkip < 0 ? 0 : calcSkip;
+    const [ items, totalCount ] = await Promise.all([
       this.itemModel.find().skip(skip).limit(limit).exec(),
-      this.itemModel.countDocuments().exec()
-    ])
+      this.itemModel.countDocuments().exec(),
+    ]);
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
