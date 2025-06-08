@@ -19,12 +19,6 @@ export type GetItemsResponse = {
 export class HomeService {
   constructor(private http: HttpClient, private route: ActivatedRoute) { }
 
-  getUrlPaginationInfos(params: Params) {
-    const pageIndex = Number(params['page']) || 1;
-    const pageSize = Number(params['pageSize']) || 10;
-
-    return { pageIndex, pageSize }
-  }
   getItems({ pageSize, pageIndex }: { pageIndex: number, pageSize: number }): Observable<GetItemsResponse> {
     const url = new URL("http://localhost:3000/items")
     url.searchParams.set("page", String(pageIndex))

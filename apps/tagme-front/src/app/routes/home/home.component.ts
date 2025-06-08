@@ -25,7 +25,6 @@ import { combineLatest, map } from 'rxjs';
 export class HomeComponent implements OnInit {
   private store = inject(Store)
   private route = inject(ActivatedRoute)
-  private router = inject(Router)
 
   displayedColumns: string[] = ['name', 'description', 'id'];
   dataSource: Items[] = [];
@@ -47,7 +46,6 @@ export class HomeComponent implements OnInit {
       }
     })
   );
-
 
   onPaginatorChange = (event: PageEvent) => {
     location.replace(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}`)
