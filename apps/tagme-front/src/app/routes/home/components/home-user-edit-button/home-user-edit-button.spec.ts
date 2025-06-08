@@ -10,7 +10,7 @@ describe('HomeUserEditButton', () => {
     await TestBed.configureTestingModule({
       imports: [HomeUserEditButton]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(HomeUserEditButton);
     component = fixture.componentInstance;

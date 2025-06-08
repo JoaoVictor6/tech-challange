@@ -15,6 +15,8 @@ import { paginationFeature } from './stores/pagination/reducers/pagination.reduc
 import { PageEvent } from '@angular/material/paginator';
 import { combineLatest, map } from 'rxjs';
 import { SearchInputComponent } from './components/search/search-input.component';
+import { PaginatorService } from './components/paginator/paginator.service';
+import { NavigationService } from '../../shared/service/navigation.service';
 
 @Component({
   standalone: true,
@@ -24,8 +26,10 @@ import { SearchInputComponent } from './components/search/search-input.component
   imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent],
 })
 export class HomeComponent implements OnInit {
+  private navigation = inject(NavigationService)
   private store = inject(Store)
   private route = inject(ActivatedRoute)
+  private paginatorService = inject(PaginatorService)
 
   displayedColumns: string[] = ['name', 'description', 'id'];
   dataSource: Items[] = [];
@@ -47,11 +51,17 @@ export class HomeComponent implements OnInit {
       }
     })
   );
-
   onPaginatorChange = (event: PageEvent) => {
-    location.replace(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}`)
+    const persistedSearchQueryParam = this.route.snapshot.queryParams["search"]
+    if (persistedSearchQueryParam) {
+      return this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}&search=${persistedSearchQueryParam}`)
+    }
+    this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}`)
   }
-  searchByText(event: any) { }
+  searchByText(word: string) {
+    const { pageIndex, pageSize } = this.paginatorService.getUrlPaginationInfos(this.route.snapshot.queryParams)
+    this.navigation.redirectTo(`/?page=${pageIndex + 1}&pageSize=${pageSize}&search=${word}`)
+  }
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;
