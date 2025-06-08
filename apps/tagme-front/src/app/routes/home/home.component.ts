@@ -4,12 +4,12 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
-import { HomeUserEditButton } from './components/home-user-edit-button/home-user-edit-button';
+import { HomeUserEditButtonComponent } from './components/home-user-edit-button/home-user-edit-button';
 import { GetItemsResponse, Items } from './home.service';
 import { CommonModule } from '@angular/common';
 import { PaginatorComponent } from './components/paginator/paginator';
 import { Store } from '@ngrx/store';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PaginationActions } from './stores/pagination/actions/pagination.actions';
 import { paginationFeature } from './stores/pagination/reducers/pagination.reducer';
 import { PageEvent } from '@angular/material/paginator';
@@ -24,7 +24,7 @@ import { SnackbarEventService } from '../../shared/snackbar-events/snackbar-even
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButtonComponent, MatCardModule, PaginatorComponent, SearchInputComponent],
   providers: [SnackbarEventService]
 })
 export class HomeComponent implements OnInit {
@@ -65,6 +65,12 @@ export class HomeComponent implements OnInit {
   searchByText(word: string) {
     if (!word) return
     this.navigation.redirectTo(`/?word=${word}`)
+  }
+  onEditUser = (userId: string) => {
+    console.log(userId)
+  }
+  onRemoveUser = (userId: string) => {
+    console.log(userId)
   }
 
   ngOnInit(): void {
