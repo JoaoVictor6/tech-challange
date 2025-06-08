@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { HomeUserEditButtonComponent } from './components/home-user-edit-button/home-user-edit-button';
-import { GetItemsResponse, Items } from './home.service';
+import { GetItemsResponse, HomeService, Items } from './home.service';
 import { CommonModule } from '@angular/common';
 import { PaginatorComponent } from './components/paginator/paginator';
 import { Store } from '@ngrx/store';
@@ -17,24 +17,25 @@ import { combineLatest, map } from 'rxjs';
 import { SearchInputComponent } from './components/search/search-input.component';
 import { PaginatorService } from './components/paginator/paginator.service';
 import { NavigationService } from '../../shared/service/navigation.service';
-import { SnackbarEventService } from '../../shared/snackbar-events/snackbar-event.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms))
 
 @Component({
   standalone: true,
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButtonComponent, MatCardModule, PaginatorComponent, SearchInputComponent, MatMenuModule],
-  providers: [SnackbarEventService]
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButtonComponent, MatCardModule, PaginatorComponent, SearchInputComponent, MatMenuModule,],
 })
 export class HomeComponent implements OnInit {
   private navigation = inject(NavigationService)
+  private homeService = inject(HomeService)
   private store = inject(Store)
   private route = inject(ActivatedRoute)
   private paginatorService = inject(PaginatorService)
-
-  constructor(private snackbarEvent: SnackbarEventService) { }
+  private _snackBar = inject(MatSnackBar);
 
   displayedColumns: string[] = ['name', 'description', 'id'];
   dataSource: Items[] = [];
@@ -68,10 +69,17 @@ export class HomeComponent implements OnInit {
     this.navigation.redirectTo(`/?word=${word}`)
   }
   onEditUser = (userId: string) => {
-    console.log(userId)
+    this.navigation.redirectTo(`/item/${userId}`)
   }
-  onRemoveUser = (userId: string) => {
-    console.log(userId)
+  onRemoveUser = async (userId: string) => {
+    const response = await this.homeService.deleteItem(userId)
+    if (response.ok) {
+      this._snackBar.open('Item apagado com sucesso')
+    } else {
+      this._snackBar.open('Erro ap apagar o item')
+    }
+    await sleep(1000)
+    location.reload()
   }
 
   ngOnInit(): void {

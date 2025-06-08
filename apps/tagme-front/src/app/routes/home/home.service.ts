@@ -28,8 +28,11 @@ export class HomeService {
       url.searchParams.set('word', word)
     }
     const response = this.http.get<GetItemsResponse>(url.toString()).pipe(
-      catchError(err => throwError(() => new Error('Dados não encontrado')))
+      catchError(err => throwError(() => new Error('Dados não encontrado', { cause: err })))
     )
     return response
+  }
+  async deleteItem(id: string) {
+    return await fetch(BFF_ROUTES.deleteItem(id), { method: 'DELETE' })
   }
 }
