@@ -18,13 +18,14 @@ import { SearchInputComponent } from './components/search/search-input.component
 import { PaginatorService } from './components/paginator/paginator.service';
 import { NavigationService } from '../../shared/service/navigation.service';
 import { SnackbarEventService } from '../../shared/snackbar-events/snackbar-event.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   standalone: true,
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButtonComponent, MatCardModule, PaginatorComponent, SearchInputComponent],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButtonComponent, MatCardModule, PaginatorComponent, SearchInputComponent, MatMenuModule],
   providers: [SnackbarEventService]
 })
 export class HomeComponent implements OnInit {
