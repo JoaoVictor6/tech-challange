@@ -4,11 +4,11 @@ import { HomeResolver } from './routes/home/home.resolver';
 
 export const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: HomeComponent,
     resolve: {
       home: HomeResolver
     },
-    title: "aaa"
+    title: 'aaa'
   }
 ];

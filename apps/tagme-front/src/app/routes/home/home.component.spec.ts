@@ -26,7 +26,7 @@ describe('HomeComponent', () => {
     snapshot: {
       data: {
         home: {
-          data: [{ name: 'Item', description: 'Desc', id: '1' }],
+          data: [ { name: 'Item', description: 'Desc', id: '1' } ],
           totalPages: 3,
         }
       },
@@ -41,7 +41,7 @@ describe('HomeComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         PaginatorService
       ],
-      imports: [HomeComponent]
+      imports: [ HomeComponent ]
     });
 
     store = TestBed.inject(MockStore);

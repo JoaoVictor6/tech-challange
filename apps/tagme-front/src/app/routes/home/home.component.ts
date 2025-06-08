@@ -23,7 +23,7 @@ import { NavigationService } from '../../shared/service/navigation.service';
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent],
+  imports: [ CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent ],
 })
 export class HomeComponent implements OnInit {
   private navigation = inject(NavigationService)
@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit {
   private route = inject(ActivatedRoute)
   private paginatorService = inject(PaginatorService)
 
-  displayedColumns: string[] = ['name', 'description', 'id'];
+  displayedColumns: string[] = [ 'name', 'description', 'id' ];
   dataSource: Items[] = [];
   totalPages = this.store.select(paginationFeature.selectTotalPages)
   pageIndex = this.store.select(paginationFeature.selectPageIndex)
@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
     this.pageIndex,
     this.totalPages
   ]).pipe(
-    map(([pageSize, pageIndex, totalPages]) => {
+    map(([ pageSize, pageIndex, totalPages ]) => {
       const totalItems = totalPages * pageSize
       return {
         totalItems,
@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
     })
   );
   onPaginatorChange = (event: PageEvent) => {
-    const persistedSearchQueryParam = this.route.snapshot.queryParams["search"]
+    const persistedSearchQueryParam = this.route.snapshot.queryParams[ 'search' ]
     if (persistedSearchQueryParam) {
       return this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}&search=${persistedSearchQueryParam}`)
     }
@@ -65,9 +65,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;
-    const paginationFirstFetch = this.route.snapshot.data['home'] as GetItemsResponse
-    const pageIndex = Number(queryParams['page']) || 0;
-    const pageSize = Number(queryParams['pageSize']) || 10;
+    const paginationFirstFetch = this.route.snapshot.data[ 'home' ] as GetItemsResponse
+    const pageIndex = Number(queryParams[ 'page' ]) || 0;
+    const pageSize = Number(queryParams[ 'pageSize' ]) || 10;
     this.store.dispatch(PaginationActions.changePage({ pageIndex, pageSize, totalPages: paginationFirstFetch.totalPages }))
     this.dataSource = paginationFirstFetch.data
   }

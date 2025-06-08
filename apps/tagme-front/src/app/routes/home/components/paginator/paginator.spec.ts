@@ -8,7 +8,7 @@ describe('Paginator', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PaginatorComponent]
+      imports: [ PaginatorComponent ]
     })
       .compileComponents();
 

@@ -8,7 +8,7 @@ describe('HomeUserEditButton', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeUserEditButton]
+      imports: [ HomeUserEditButton ]
     })
       .compileComponents();
 

@@ -1,7 +1,7 @@
-import { ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot } from "@angular/router";
-import { GetItemsResponse, HomeService } from "./home.service";
-import { Injectable } from "@angular/core";
-import { PaginatorService } from "./components/paginator/paginator.service";
+import { ActivatedRouteSnapshot, MaybeAsync, RedirectCommand, Resolve, RouterStateSnapshot } from '@angular/router';
+import { GetItemsResponse, HomeService } from './home.service';
+import { Injectable } from '@angular/core';
+import { PaginatorService } from './components/paginator/paginator.service';
 
 @Injectable({ providedIn: 'root' })
 export class HomeResolver implements Resolve<GetItemsResponse> {

@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
   ],
   templateUrl: './search-input.component.html',
-  styleUrls: ['./search-input.component.css']
+  styleUrls: [ './search-input.component.css' ]
 })
 export class SearchInputComponent {
   @Output() onSearch = new EventEmitter<string>();
