@@ -5,13 +5,13 @@ import { IsOptional, IsString, IsUrl } from 'class-validator';
 export class UpdateItemDto extends PartialType(CreateItemDto) {
   @IsOptional()
   @IsString()
-  name?: string;
+    name?: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+    description?: string;
 
   @IsOptional()
   @IsUrl()
-  imageUrl?: string;
+    imageUrl?: string;
 }

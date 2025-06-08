@@ -6,13 +6,13 @@ export type ItemDocument = Item & Document;
 @Schema()
 export class Item {
   @Prop({ required: true })
-  name: string;
+    name: string;
 
   @Prop()
-  description: string;
+    description: string;
 
   @Prop()
-  imageUrl: string;
+    imageUrl: string;
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

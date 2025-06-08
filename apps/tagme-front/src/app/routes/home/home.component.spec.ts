@@ -61,7 +61,7 @@ describe('HomeComponent', () => {
 
       expect(dispatchSpy).toHaveBeenCalledWith(
         PaginationActions.changePage({
-          pageIndex: 0,
+          pageIndex: 1,
           pageSize: 10,
           totalPages: 3
         })
@@ -96,13 +96,13 @@ describe('HomeComponent', () => {
   describe('onPaginatorChange()', () => {
     it('updates location with search param if present in queryParams', () => {
       mockActivatedRoute.snapshot.queryParams = {
-        search: 'query'
+        word: 'query'
       };
 
       component.onPaginatorChange({ pageIndex: 2, pageSize: 20 } as any);
 
       expect(replaceSpy).toHaveBeenCalledWith(
-        '/?page=3&pageSize=20&search=query'
+        '/?page=3&pageSize=20&word=query'
       );
     });
 
@@ -119,27 +119,27 @@ describe('HomeComponent', () => {
     it('calls getUrlPaginationInfos and updates location with search term', () => {
       spyOn(paginatorService, 'getUrlPaginationInfos').and.returnValue({
         pageIndex: 1,
-        pageSize: 25
+        pageSize: 25,
+        word: '1'
       });
 
       component.searchByText('banana');
 
       expect(replaceSpy).toHaveBeenCalledWith(
-        '/?page=2&pageSize=25&search=banana'
+        '/?word=banana'
       );
     });
 
     it('searches with empty string', () => {
       spyOn(paginatorService, 'getUrlPaginationInfos').and.returnValue({
         pageIndex: 0,
-        pageSize: 10
+        pageSize: 10,
+        word: ''
       });
 
       component.searchByText('');
 
-      expect(replaceSpy).toHaveBeenCalledWith(
-        '/?page=1&pageSize=10&search='
-      );
+      expect(replaceSpy).not.toHaveBeenCalled();
     });
   });
 });

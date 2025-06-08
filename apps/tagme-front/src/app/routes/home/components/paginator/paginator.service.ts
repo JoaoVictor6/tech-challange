@@ -8,7 +8,8 @@ export class PaginatorService {
   getUrlPaginationInfos(params: Params) {
     const pageIndex = Number(params[ 'page' ]) || 1;
     const pageSize = Number(params[ 'pageSize' ]) || 10;
+    const word = params[ 'word' ] || '';
 
-    return { pageIndex, pageSize }
+    return { pageIndex, pageSize, word }
   }
 }

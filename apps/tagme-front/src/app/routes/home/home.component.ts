@@ -52,22 +52,21 @@ export class HomeComponent implements OnInit {
     })
   );
   onPaginatorChange = (event: PageEvent) => {
-    const persistedSearchQueryParam = this.route.snapshot.queryParams[ 'search' ]
+    const { word: persistedSearchQueryParam } = this.paginatorService.getUrlPaginationInfos(this.route.snapshot.queryParams)
     if (persistedSearchQueryParam) {
-      return this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}&search=${persistedSearchQueryParam}`)
+      return this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}&word=${persistedSearchQueryParam}`)
     }
     this.navigation.redirectTo(`/?page=${event.pageIndex + 1}&pageSize=${event.pageSize}`)
   }
   searchByText(word: string) {
-    const { pageIndex, pageSize } = this.paginatorService.getUrlPaginationInfos(this.route.snapshot.queryParams)
-    this.navigation.redirectTo(`/?page=${pageIndex + 1}&pageSize=${pageSize}&search=${word}`)
+    if (!word) return
+    this.navigation.redirectTo(`/?word=${word}`)
   }
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;
     const paginationFirstFetch = this.route.snapshot.data[ 'home' ] as GetItemsResponse
-    const pageIndex = Number(queryParams[ 'page' ]) || 0;
-    const pageSize = Number(queryParams[ 'pageSize' ]) || 10;
+    const { pageSize, pageIndex } = this.paginatorService.getUrlPaginationInfos(queryParams)
     this.store.dispatch(PaginationActions.changePage({ pageIndex, pageSize, totalPages: paginationFirstFetch.totalPages }))
     this.dataSource = paginationFirstFetch.data
   }

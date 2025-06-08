@@ -8,7 +8,7 @@ export class HomeResolver implements Resolve<GetItemsResponse> {
   constructor(private paginatorService: PaginatorService, private homeService: HomeService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GetItemsResponse | RedirectCommand> {
-    const { pageSize, pageIndex } = this.paginatorService.getUrlPaginationInfos(route.queryParams)
-    return this.homeService.getItems({ pageSize, pageIndex })
+    const { pageSize, pageIndex, word } = this.paginatorService.getUrlPaginationInfos(route.queryParams)
+    return this.homeService.getItems({ pageSize, pageIndex, word })
   }
 }

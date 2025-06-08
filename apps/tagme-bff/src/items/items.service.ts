@@ -7,8 +7,26 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class ItemsService {
-  constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) {}
+  constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) { }
 
+  private static BuildPrefixFilter(
+    field: string,
+    prefix?: string,
+  ): Record<string, unknown> {
+    if (!prefix || typeof prefix !== 'string' || prefix.trim() === '') {
+      return {};
+    }
+
+    const sanitize = (input: string) =>
+      input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    return {
+      [ field ]: {
+        $regex: '^' + sanitize(prefix),
+        $options: 'i', // case-insensitive
+      },
+    };
+  }
   async create(createItemDto: CreateItemDto): Promise<Item> {
     const createdItem = new this.itemModel(createItemDto);
     return createdItem.save();
@@ -17,19 +35,25 @@ export class ItemsService {
   async findAll({
     page: rawPage = 1,
     limit: rawLimit = 10,
+    word
   }: {
     page: number;
     limit: number;
+    word: string;
   }) {
     const normalizeValue = (value: number) => (value <= 0 ? 1 : value);
     const page = normalizeValue(rawPage);
     const limit = normalizeValue(rawLimit);
     const calcSkip = (page - 1) * limit;
     const skip = calcSkip < 0 ? 0 : calcSkip;
+
+    const filter = ItemsService.BuildPrefixFilter('name', word);
+
     const [ items, totalCount ] = await Promise.all([
-      this.itemModel.find().skip(skip).limit(limit).exec(),
-      this.itemModel.countDocuments().exec(),
+      this.itemModel.find(filter).skip(skip).limit(limit).exec(),
+      this.itemModel.countDocuments(filter).exec(),
     ]);
+
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
