@@ -17,13 +17,15 @@ import { combineLatest, map } from 'rxjs';
 import { SearchInputComponent } from './components/search/search-input.component';
 import { PaginatorService } from './components/paginator/paginator.service';
 import { NavigationService } from '../../shared/service/navigation.service';
+import { SnackbarEventService } from '../../shared/snackbar-events/snackbar-event.service';
 
 @Component({
   standalone: true,
   selector: 'home',
   styleUrl: 'home.component.css',
   templateUrl: 'home.component.html',
-  imports: [ CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent ],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, HomeUserEditButton, MatCardModule, PaginatorComponent, SearchInputComponent],
+  providers: [SnackbarEventService]
 })
 export class HomeComponent implements OnInit {
   private navigation = inject(NavigationService)
@@ -31,7 +33,9 @@ export class HomeComponent implements OnInit {
   private route = inject(ActivatedRoute)
   private paginatorService = inject(PaginatorService)
 
-  displayedColumns: string[] = [ 'name', 'description', 'id' ];
+  constructor(private snackbarEvent: SnackbarEventService) { }
+
+  displayedColumns: string[] = ['name', 'description', 'id'];
   dataSource: Items[] = [];
   totalPages = this.store.select(paginationFeature.selectTotalPages)
   pageIndex = this.store.select(paginationFeature.selectPageIndex)
@@ -41,7 +45,7 @@ export class HomeComponent implements OnInit {
     this.pageIndex,
     this.totalPages
   ]).pipe(
-    map(([ pageSize, pageIndex, totalPages ]) => {
+    map(([pageSize, pageIndex, totalPages]) => {
       const totalItems = totalPages * pageSize
       return {
         totalItems,
@@ -65,7 +69,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;
-    const paginationFirstFetch = this.route.snapshot.data[ 'home' ] as GetItemsResponse
+    const paginationFirstFetch = this.route.snapshot.data['home'] as GetItemsResponse
     const { pageSize, pageIndex } = this.paginatorService.getUrlPaginationInfos(queryParams)
     this.store.dispatch(PaginationActions.changePage({ pageIndex, pageSize, totalPages: paginationFirstFetch.totalPages }))
     this.dataSource = paginationFirstFetch.data
