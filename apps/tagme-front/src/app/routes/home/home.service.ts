@@ -7,7 +7,7 @@ import { BFF_ROUTES } from '../../shared/service/bff-routes';
 export type Items = {
   name: string;
   description: string;
-  id: string;
+  _id: string;
 }
 
 export type GetItemsResponse = {
