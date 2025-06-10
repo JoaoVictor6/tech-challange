@@ -16,7 +16,7 @@ import { ItemFormComponent, ItemFormValue } from '../../shared/component/item-fo
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: 100%;
     }
   ` ],
 })
