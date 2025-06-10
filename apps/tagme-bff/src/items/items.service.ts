@@ -21,13 +21,13 @@ export class ItemsService {
       input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     return {
-      [ field ]: {
+      [field]: {
         $regex: '^' + sanitize(prefix),
         $options: 'i', // case-insensitive
       },
     };
   }
-  async create(createItemDto: CreateItemDto): Promise<Item> {
+  async create(createItemDto: CreateItemDto & { imageUrl }): Promise<Item> {
     const createdItem = new this.itemModel(createItemDto);
     return createdItem.save();
   }
@@ -49,7 +49,7 @@ export class ItemsService {
 
     const filter = ItemsService.BuildPrefixFilter('name', word);
 
-    const [ items, totalCount ] = await Promise.all([
+    const [items, totalCount] = await Promise.all([
       this.itemModel.find(filter).skip(skip).limit(limit).exec(),
       this.itemModel.countDocuments(filter).exec(),
     ]);

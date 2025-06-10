@@ -7,18 +7,51 @@ import {
   Patch,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer'
+import { extname } from 'path';
+import { setupPublicFolder } from 'src/setup-public-folder';
+import { randomUUID } from 'crypto';
+
+const MAX_FILE_SIZE = 1024 * 1024 // 1MB
 
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) { }
 
   @Post()
-  create(@Body() createItemDto: CreateItemDto) {
-    return this.itemsService.create(createItemDto);
+  @UseInterceptors(
+    FileInterceptor('image', {
+      limits: { fileSize: MAX_FILE_SIZE },
+      storage: diskStorage({
+        destination: `./${setupPublicFolder.PUBLIC_FOLDER_NAME}`,
+        filename: (req, file, callback) => {
+          const uniqueSuffix = randomUUID();
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Tipo de arquivo inválido'), false);
+        }
+      },
+    }),
+  )
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createItemDto: CreateItemDto
+  ) {
+    return this.itemsService.create({ ...createItemDto, imageUrl: file.path });
   }
 
   @Get()

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemFormComponent, ItemFormValue } from '../../shared/component/item-form/item-form.component';
+import { NewItemService } from './new-item.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   standalone: true,
@@ -21,8 +23,12 @@ import { ItemFormComponent, ItemFormValue } from '../../shared/component/item-fo
   ` ],
 })
 export class NewItemPageComponent {
-  handleSubmit(value: ItemFormValue) {
-    console.log('Submitted:', value);
-    // salvar item no backend
+  private _snackBar = inject(MatSnackBar);
+  newItemService = inject(NewItemService)
+  async handleSubmit(value: ItemFormValue) {
+    const result = await this.newItemService.createItem(value)
+    console.log(result)
+    if (result.ok) this._snackBar.open('Item criado!')
+    if (result.fail) this._snackBar.open('Ocorreu um erro ao criar o item!')
   }
 }
