@@ -69,7 +69,7 @@ export class ItemsService {
     return item;
   }
 
-  async update(id: string, updateItemDto: UpdateItemDto): Promise<Item> {
+  async update(id: string, updateItemDto: UpdateItemDto & Partial<{ imageUrl: string }>): Promise<Item> {
     const updatedItem = await this.itemModel
       .findByIdAndUpdate(id, updateItemDto, { new: true })
       .exec();

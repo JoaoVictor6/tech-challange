@@ -3,12 +3,6 @@ import { BFF_ROUTES } from '../../shared/service/bff-routes'
 import { ItemFormValue } from '../../shared/component/item-form/item-form.component'
 
 type Result = Partial<{ ok: boolean, fail: boolean }>
-const jsonHeader = () => {
-  const header = new Headers()
-  header.set('content-type', 'application/json; charset=utf-8')
-
-  return header
-}
 
 @Injectable({ providedIn: 'root' })
 export class NewItemService {

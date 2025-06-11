@@ -24,10 +24,8 @@ const MAX_FILE_SIZE = 1024 * 1024 // 1MB
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) { }
-
-  @Post()
-  @UseInterceptors(
-    FileInterceptor('image', {
+  private static fileMiddlewareSetup() {
+    return FileInterceptor('image', {
       limits: { fileSize: MAX_FILE_SIZE },
       storage: diskStorage({
         destination: `./${setupPublicFolder.PUBLIC_FOLDER_NAME}`,
@@ -45,8 +43,11 @@ export class ItemsController {
           callback(new Error('Tipo de arquivo inválido'), false);
         }
       },
-    }),
-  )
+    })
+  }
+
+  @Post()
+  @UseInterceptors(ItemsController.fileMiddlewareSetup())
   create(
     @UploadedFile() file: Express.Multer.File,
     @Body() createItemDto: CreateItemDto
@@ -67,8 +68,16 @@ export class ItemsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemsService.update(id, updateItemDto);
+  @UseInterceptors(ItemsController.fileMiddlewareSetup())
+  update(
+    @Param('id') id: string,
+    @Body() updateItemDto: UpdateItemDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      return this.itemsService.update(id, updateItemDto);
+    }
+    return this.itemsService.update(id, { ...updateItemDto, imageUrl: file.path });
   }
 
   @Delete(':id')

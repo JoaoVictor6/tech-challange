@@ -14,5 +14,5 @@ export const routes: Routes = [
     },
   },
   { path: 'items/new', component: NewItemPageComponent },
-  { path: 'items/:id', component: EditItemPageComponent, resolve: { item: EditItemResolve } }
+  { path: 'item/:id', component: EditItemPageComponent, resolve: { item: EditItemResolve } }
 ];

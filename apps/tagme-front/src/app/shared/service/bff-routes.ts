@@ -6,5 +6,6 @@ export const BFF_ROUTES = {
   findItemById: (id: Id) => `${BASE_URL}/items/${id}` as const,
   createItem: `${BASE_URL}/items` as const,
   updateItem: (id: Id) => `${BASE_URL}/items/${id}` as const,
-  deleteItem: (id: Id) => `${BASE_URL}/items/${id}` as const,
+  deleteItem: (id: Id) => `/items/${id}` as const,
+  getImage: (path: string) => `${BASE_URL}/${path}`
 } as const;
