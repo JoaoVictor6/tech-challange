@@ -36,7 +36,7 @@ export class ItemsController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        const allowedMimeTypes = ['image/jpeg', 'image/png'];
+        const allowedMimeTypes = [ 'image/jpeg', 'image/png' ];
         if (allowedMimeTypes.includes(file.mimetype)) {
           callback(null, true);
         } else {

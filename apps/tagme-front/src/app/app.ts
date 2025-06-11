@@ -5,9 +5,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink,
+  imports: [ RouterOutlet, RouterLink,
     MatToolbarModule,
-    MatButtonModule,],
+    MatButtonModule, ],
   standalone: true,
   styles: `
     #root {

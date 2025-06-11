@@ -14,6 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideStore({ [paginationFeature.name]: paginationFeature.reducer })
+    provideStore({ [ paginationFeature.name ]: paginationFeature.reducer })
   ]
 };
