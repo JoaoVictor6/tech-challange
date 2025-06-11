@@ -5,7 +5,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-
 export interface ItemFormValue {
   image: File | null;
   name: string;
@@ -37,6 +36,30 @@ export class ItemFormComponent {
 
   form: FormGroup;
 
+  private static cropImageToSquare(file: File): Promise<File> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const size = Math.min(img.width, img.height);
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, size, size, 0, 0, size, size);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name, { type: blob.type }));
+            }
+          }, file.type);
+        };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       image: [null],
@@ -56,10 +79,15 @@ export class ItemFormComponent {
     this.form.patchValue({ image: file });
   }
 
-  submit() {
-    if (this.form.valid) {
-      this.onSubmit.emit(this.form.value);
+  async submit() {
+    if (!this.form.valid) return;
+
+    const rawValue: ItemFormValue = this.form.value;
+
+    if (rawValue.image) {
+      return this.onSubmit.emit({ ...rawValue, image: await ItemFormComponent.cropImageToSquare(rawValue.image) })
     }
+    this.onSubmit.emit(rawValue);
   }
 }
 
