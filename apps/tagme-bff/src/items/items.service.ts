@@ -27,7 +27,7 @@ export class ItemsService {
       },
     };
   }
-  async create(createItemDto: CreateItemDto & { imageUrl }): Promise<Item> {
+  async create(createItemDto: CreateItemDto & { imageUrl: string }): Promise<Item> {
     const createdItem = new this.itemModel(createItemDto);
     return createdItem.save();
   }

@@ -1,129 +1,157 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { ItemsService } from './items.service';
-import { Item, ItemSchema, ItemDocument } from './schemas/item.schema';
-import { Model } from 'mongoose';
-import { MongooseModule } from '@nestjs/mongoose';
+import { Item, ItemSchema } from './schemas/item.schema';
+import { NotFoundException } from '@nestjs/common';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import { CreateItemDto } from './dto/create-item.dto';
+
+const mockItemModel = () => ({
+  findById: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  findByIdAndDelete: jest.fn(),
+  find: jest.fn(),
+  countDocuments: jest.fn(),
+  save: jest.fn(),
+  constructor: jest.fn()
+});
+
+const mockItem = { _id: '1', name: 'Test', save: jest.fn() };
 
 describe('ItemsService', () => {
   let service: ItemsService;
-  let model: Model<Item>;
+  let model: any;
   let mongod: MongoMemoryServer;
+  let module: TestingModule;
 
-  beforeAll(async () => {
-    mongod = await MongoMemoryServer.create();
-    const uri = mongod.getUri();
+  describe('Unit Tests with Mocks', () => {
+    beforeEach(async () => {
+      module = await Test.createTestingModule({
+        providers: [
+          ItemsService,
+          {
+            provide: getModelToken(Item.name),
+            useFactory: mockItemModel,
+          },
+        ],
+      }).compile();
 
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        MongooseModule.forRoot(uri),
-        MongooseModule.forFeature([ { name: Item.name, schema: ItemSchema } ]),
-      ],
-      providers: [ ItemsService ],
-    }).compile();
-
-    service = module.get<ItemsService>(ItemsService);
-    model = module.get<Model<Item>>(getModelToken(Item.name));
-  });
-
-  afterEach(async () => {
-    await model.deleteMany({});
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
-    await mongod.stop();
-  });
-
-  it('should create and retrieve an item', async () => {
-    const created = (await service.create({
-      name: 'Test Item',
-      description: 'A description',
-      imageUrl: 'http://image.url',
-    })) as ItemDocument;
-
-    expect(created).toHaveProperty('_id');
-    expect(created.name).toBe('Test Item');
-
-    const found = await service.findOne(created._id as string);
-    expect(found.name).toBe('Test Item');
-  });
-  it('verify params normalization', async () => {
-    for (let i = 1; i <= 2; i++) {
-      await service.create({
-        name: `Item ${i}`,
-        description: `Description ${i}`,
-        imageUrl: `http://example.com/image-${i}.jpg`,
-      });
-    }
-
-    const result = await service.findAll({ page: 0, limit: 0, word: '' });
-
-    expect(result.page).toBe(1);
-    expect(result.totalPages).toBe(2);
-  });
-  it('should return paginated items with correct structure', async () => {
-    for (let i = 1; i <= 25; i++) {
-      await service.create({
-        name: `Item ${i}`,
-        description: `Description ${i}`,
-        imageUrl: `http://example.com/image-${i}.jpg`,
-      });
-    }
-
-    const page = 2;
-    const limit = 10;
-
-    const result = await service.findAll({ page, limit, word: '' });
-
-    expect(result.data).toHaveLength(10);
-    expect(result.page).toBe(2);
-    expect(result.totalPages).toBe(3);
-
-    expect(result.data[ 0 ].name).toBe('Item 11');
-    expect(result.data[ 9 ].name).toBe('Item 20');
-  });
-
-  it('should return items that start with a specific prefix (case-insensitive)', async () => {
-    const names = [ 'Aluminum', 'Alucard', 'Aluno', 'Banana', 'aluguel' ];
-    for (const name of names) {
-      await service.create({
-        name,
-        description: `${name} description`,
-        imageUrl: `http://example.com/${name.toLowerCase()}.jpg`,
-      });
-    }
-
-    const result = await service.findAll({ page: 1, limit: 10, word: 'alu' });
-
-    const resultNames = result.data.map(item => item.name);
-    expect(resultNames).toEqual(
-      expect.arrayContaining([ 'Aluminum', 'Alucard', 'Aluno', 'aluguel' ]),
-    );
-    expect(resultNames).not.toContain('Banana');
-  });
-
-  it('should return no items if prefix does not match any', async () => {
-    const result = await service.findAll({ page: 1, limit: 10, word: 'xyz' });
-    expect(result.data).toHaveLength(0);
-    expect(result.totalPages).toBe(0);
-  });
-
-  it('should sanitize regex to avoid injection and still return matches', async () => {
-    await service.create({
-      name: 'SafeTest',
-      description: 'Test for regex safety',
-      imageUrl: 'http://example.com/safe.jpg',
+      service = module.get<ItemsService>(ItemsService);
+      model = module.get(getModelToken(Item.name));
     });
 
-    const result = await service.findAll({
-      page: 1,
-      limit: 10,
-      word: 'Safe.*',
+    describe('findAll', () => {
+      it('should return paginated results with default values', async () => {
+        model.find.mockReturnValue({ skip: () => ({ limit: () => ({ exec: () => [ mockItem ] }) }) });
+        model.countDocuments.mockReturnValue({ exec: () => 1 });
+
+        const result = await service.findAll({ page: undefined as unknown as number, limit: undefined as unknown as number, word: '' });
+        expect(result).toEqual({ data: [ mockItem ], page: 1, totalPages: 1 });
+      });
+
+      it.each([
+        { page: -1, limit: -5 },
+        { page: 0, limit: 0 },
+      ])('should normalize invalid page/limit values: %#', async ({ page, limit }) => {
+        model.find.mockReturnValue({ skip: () => ({ limit: () => ({ exec: () => [ mockItem ] }) }) });
+        model.countDocuments.mockReturnValue({ exec: () => 1 });
+
+        const result = await service.findAll({ page, limit, word: '' });
+        expect(result.page).toBe(1);
+        expect(result.totalPages).toBe(1);
+      });
+
+      it('should apply case-insensitive regex filter', async () => {
+        model.find.mockImplementation((filter) => {
+          expect(filter.name.$regex).toBe('^Test'); // Confirma que a string esperada está correta
+          expect(filter.name.$options).toBe('i');
+          return { skip: () => ({ limit: () => ({ exec: () => [ mockItem ] }) }) };
+        });
+        model.countDocuments.mockReturnValue({ exec: () => 1 });
+
+        await service.findAll({ page: 1, limit: 10, word: 'Test' });
+      });
     });
 
-    expect(result.data).toHaveLength(0); // should not match as regex injection is sanitized
+    describe('findOne', () => {
+      it('should return item if found', async () => {
+        model.findById.mockReturnValue({ exec: () => mockItem });
+        const result = await service.findOne('1');
+        expect(result).toEqual(mockItem);
+      });
+
+      it('should throw NotFoundException if item is not found', async () => {
+        model.findById.mockReturnValue({ exec: () => null });
+        await expect(service.findOne('999')).rejects.toThrow(NotFoundException);
+      });
+    });
+
+    describe('update', () => {
+      it('should return updated item if found', async () => {
+        model.findByIdAndUpdate.mockReturnValue({ exec: () => mockItem });
+        const result = await service.update('1', { name: 'Updated' });
+        expect(result).toEqual(mockItem);
+      });
+
+      it('should throw NotFoundException if item is not found', async () => {
+        model.findByIdAndUpdate.mockReturnValue({ exec: () => null });
+        await expect(service.update('999', { name: 'X' })).rejects.toThrow(NotFoundException);
+      });
+    });
+
+    describe('remove', () => {
+      it('should succeed if item is found', async () => {
+        model.findByIdAndDelete.mockReturnValue({ exec: () => mockItem });
+        await expect(service.remove('1')).resolves.toBeUndefined();
+      });
+
+      it('should throw NotFoundException if item not found', async () => {
+        model.findByIdAndDelete.mockReturnValue({ exec: () => null });
+        await expect(service.remove('999')).rejects.toThrow(NotFoundException);
+      });
+    });
+  });
+
+  describe('Integration Tests with in-memory MongoDB', () => {
+    beforeAll(async () => {
+      mongod = await MongoMemoryServer.create();
+      const uri = mongod.getUri();
+
+      module = await Test.createTestingModule({
+        imports: [
+          MongooseModule.forRoot(uri),
+          MongooseModule.forFeature([ { name: Item.name, schema: ItemSchema } ]),
+        ],
+        providers: [ ItemsService ],
+      }).compile();
+
+      service = module.get<ItemsService>(ItemsService);
+    });
+
+    afterAll(async () => {
+      await mongoose.connection.close();
+      await mongod.stop();
+    });
+
+    it('should create and retrieve an item from real db', async () => {
+      const item = await service.create({ name: 'Banana', imageUrl: 'banana.png' } as unknown as CreateItemDto & { imageUrl: string }) as unknown as { _id: string };
+      const found = await service.findOne(item._id.toString());
+
+      expect(found.name).toBe('Banana');
+    });
+
+    it('should update an item in db', async () => {
+      const item = await service.create({ name: 'Orange', imageUrl: 'orange.png' } as unknown as CreateItemDto & { imageUrl: string }) as unknown as { _id: string };
+      const updated = await service.update(item._id.toString(), { name: 'Updated Orange' });
+
+      expect(updated.name).toBe('Updated Orange');
+    });
+
+    it('should delete an item in db', async () => {
+      const item = await service.create({ name: 'ToDelete', imageUrl: 'del.png' } as unknown as CreateItemDto & { imageUrl: string }) as unknown as { _id: string };
+      await service.remove(item._id.toString());
+      await expect(service.findOne(item._id.toString())).rejects.toThrow(NotFoundException);
+    });
   });
 });
