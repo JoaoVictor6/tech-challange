@@ -1,84 +1,48 @@
-# Turborepo starter
+# Tech challange
+## Dependencias
+- Docker
+    Usado para criar um banco mongo. A lib indicada no documento para um banco em memoria se mostrou extremamente instavel.
+- [PNPM](https://pnpm.io/workspaces)
+    Rapido, otimiza espaco em disco e o suporte para monorepo é muito interessante.
+- [Turborepo](https://turborepo.com/docs)
+    Vem com muita coisa pronta para monorepos, facilita o setup e oferece uam serie de facilidades.
+- Node
 
-This Turborepo starter is maintained by the Turborepo core team.
+## Como rodar
+1. Instale as dependencias com PNPM.
+´´´sh
+pnpn install
+´´´
+2. Inicie o docker compose
+´´´sh
+docker compose -f apps/tagme-bff/docker-compose.yml up
+´´´
+3. Rode o ambiente de desenvolvimento
+´´´sh
+pnpm run dev
+´´´
 
-## Using this example
+## Frontend
+### Tecnologias
+- [Angular](https://angular.dev/)
+- [Angular Material](https://material.angular.dev/)
+### Resumo
+Essa etapa foi, de longe, a mais desafiadora do processo. Digo isso porque Angular não é uma tecnologia com a qual tenho afinidade, na verdade, essa foi a primeira vez que mexi com Angular!. A ideia de trabalhar com uma estrutura tão carregada, baseada em classes no front-end, é bem diferente do que costumo estudar ou utilizar no meu dia a dia.
 
-Run the following command:
+Tenho preferência por programação funcional e por bibliotecas como o React, então acabo não explorando muito o Angular. No entanto, trabalhando com desenvolvimento web, entendo que, no fim das contas, todos buscamos a mesma coisa: manipular o DOM.
 
-```sh
-npx create-turbo@latest
-```
+Tive alguma dificuldade no início para me adaptar ao boilerplate e à estrutura do Angular, mas o framework se mostrou bem ágil e relativamente simples de usar, uma vez que entendi a proposta.
 
-## What's inside?
+Pela minha pouca experiência com Angular, optei por não me aventurar muito na reatividade e seguir um caminho mais padrão para lidar com estados e rotas. Utilizei a URL e o fluxo nativo de navegação para atualizar listas e lidar com paginação. Gosto desse modelo porque acredito que oferece uma experiência de usuário fluida de maneira simples.
 
-This Turborepo includes the following packages/apps:
+Manter o estado da aplicação via URL é uma prática que tento adotar sempre que possível. Em cenários como dashboards, isso se torna especialmente útil: a URL funciona como uma espécie de “query” que o cliente pode compartilhar ou salvar, garantindo consistência e facilidade no acesso às informações.
 
-### Apps and Packages
+Considerei me aprofundar e aplicar Server-Side Rendering (SSR) para tornar as páginas da tabela e de edição renderizadas no servidor, oferecendo uma experiência mais rápida e otimizada para o cliente. Já a tela de cadastro permaneceria como uma página estática, por se tratar de um fluxo mais simples e com menor impacto na performance inicial.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Backend
+## Tecnologias
+- [NestJS]
+- [Multer]
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+### Resumo
+Lidar com nestJS faz parte do meu dia a dia. Nessa etapa, utilizei bastante da CLI do proprio nest para criar boa parte do codigo e ajustei para receber as imagens.
