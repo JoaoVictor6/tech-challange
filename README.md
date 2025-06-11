@@ -9,18 +9,19 @@
 - Node
 
 ## Como rodar
-1. Instale as dependencias com PNPM.
-´´´sh
+1. Instale as dependencias com PNPM
+```sh
 pnpn install
-´´´
+```
 2. Inicie o docker compose
-´´´sh
+
+```sh
 docker compose -f apps/tagme-bff/docker-compose.yml up
-´´´
+```
 3. Rode o ambiente de desenvolvimento
-´´´sh
+```sh
 pnpm run dev
-´´´
+```
 
 ## Frontend
 ### Tecnologias
