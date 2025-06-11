@@ -41,8 +41,8 @@ Considerei me aprofundar e aplicar Server-Side Rendering (SSR) para tornar as pÃ
 
 ## Backend
 ## Tecnologias
-- [NestJS]
-- [Multer]
+- NestJS
+- Multer
 
 ### Resumo
 Lidar com nestJS faz parte do meu dia a dia. Nessa etapa, utilizei bastante da CLI do proprio nest para criar boa parte do codigo e ajustei para receber as imagens.
